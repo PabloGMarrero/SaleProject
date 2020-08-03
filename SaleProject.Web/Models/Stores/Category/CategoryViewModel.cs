@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SaleProject.Web.Models.Stores.Category
+﻿namespace SaleProject.Web.Models.Stores.Category
 {
     public class CategoryViewModel
     {

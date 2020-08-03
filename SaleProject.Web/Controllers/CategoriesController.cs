@@ -57,21 +57,19 @@ namespace SaleProject.Web.Controllers
             });
         }
 
-        // PUT: api/Categories/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory([FromRoute] int id, [FromBody] Category category)
+        // PUT: api/Categories/Update
+        [HttpPut("[action]")]
+        public async Task<IActionResult> Update([FromBody] UpdateViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid || model.idcategory <= 0) return BadRequest(ModelState);
 
-            if (id != category.idcategory)
-            {
-                return BadRequest();
-            }
+            var category = await _context.Categories.FirstOrDefaultAsync(
+                c => c.idcategory == model.idcategory);
 
-            _context.Entry(category).State = EntityState.Modified;
+            if (category == null) return NotFound();
+
+            category.namecategory = model.namecategory ;
+            category.categorydescription = model.categorydescription;
 
             try
             {
@@ -79,54 +77,86 @@ namespace SaleProject.Web.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CategoryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Categories
-        [HttpPost]
-        public async Task<IActionResult> PostCategory([FromBody] Category category)
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Create([FromBody] CreateViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            Category aCategory = new Category
             {
-                return BadRequest(ModelState);
+                namecategory = model.namecategory,
+                categorydescription = model.categorydescription,
+                condition = true
+            };
+
+            _context.Categories.Add(aCategory);
+            try
+            {
+                await _context.SaveChangesAsync();
             }
-
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCategory", new { id = category.idcategory }, category);
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
+                
+            return Ok();
         }
 
-        // DELETE: api/Categories/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory([FromRoute] int id)
+        // DELETE: api/Categories/Delete/5
+        [HttpDelete("[action]/{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
 
             var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
+            if (category == null) return NotFound();
 
             _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
 
             return Ok(category);
         }
+
+        // Change condition: api/Categories/ChangeCondition/5
+        [HttpPut("[action]/{id}")]
+        public async Task<IActionResult> ChangeCondition([FromRoute] int id)
+        {
+            if (id <= 0) return BadRequest(ModelState);
+
+            var category = await _context.Categories.FirstOrDefaultAsync(
+                c => c.idcategory == id);
+
+            if (category == null) return NotFound();
+
+            category.condition = !category.condition;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
 
         private bool CategoryExists(int id)
         {
