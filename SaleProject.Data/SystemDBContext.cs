@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using SaleProject.Data.Maping.Stores;
+using SaleProject.Data.Maping.Users;
 using SaleProject.Entities.Store;
+using SaleProject.Entities.Users;
 
 namespace SaleProject.Data
 {
@@ -11,6 +13,7 @@ namespace SaleProject.Data
     {
         public DbSet<Category> Categories { get; set; }
         public DbSet<Item> Items { get; set; }
+        public DbSet<Role> Roles { get; set; }
         public SystemDBContext(DbContextOptions<SystemDBContext> options): base(options)
         {
 
@@ -21,6 +24,7 @@ namespace SaleProject.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new CategoryMapping());
             modelBuilder.ApplyConfiguration(new ItemMapping());
+            modelBuilder.ApplyConfiguration(new RoleMapping());
         }
     }
 }
