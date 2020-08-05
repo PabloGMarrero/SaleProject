@@ -83,7 +83,7 @@ namespace SaleProject.Web.Controllers
             return Ok();
         }
 
-        // POST: api/Categories
+        // POST: api/Categories/Create
         [HttpPost("[action]")]
         public async Task<IActionResult> Create([FromBody] CreateViewModel model)
         {
@@ -157,6 +157,17 @@ namespace SaleProject.Web.Controllers
             return Ok();
         }
 
+        // GET: api/Categories/Select
+        [HttpGet("[action]")]
+        public async Task<IEnumerable<SelectViewModel>> Select()
+        {
+            var categories = await _context.Categories.Where(c=>c.condition).ToListAsync();
+            return categories.Select(category => new SelectViewModel
+            {
+                idcategory = category.idcategory,
+                name = category.namecategory,
+            });
+        }
 
         private bool CategoryExists(int id)
         {

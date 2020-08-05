@@ -10,6 +10,7 @@ namespace SaleProject.Data
     public class SystemDBContext : DbContext
     {
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Item> Items { get; set; }
         public SystemDBContext(DbContextOptions<SystemDBContext> options): base(options)
         {
 
@@ -19,6 +20,7 @@ namespace SaleProject.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new CategoryMapping());
+            modelBuilder.ApplyConfiguration(new ItemMapping());
         }
     }
 }

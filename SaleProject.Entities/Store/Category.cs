@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SaleProject.Entities.Store
 {
@@ -11,5 +12,7 @@ namespace SaleProject.Entities.Store
         [StringLength(100)]
         public string categorydescription { get; set; }
         public bool condition { get; set; }
+
+        public ICollection<Item> items { get; set; }
     }
 }
