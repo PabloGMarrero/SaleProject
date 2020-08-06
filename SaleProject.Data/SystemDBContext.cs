@@ -14,6 +14,7 @@ namespace SaleProject.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<User> Users { get; set; }
         public SystemDBContext(DbContextOptions<SystemDBContext> options): base(options)
         {
 
@@ -25,6 +26,7 @@ namespace SaleProject.Data
             modelBuilder.ApplyConfiguration(new CategoryMapping());
             modelBuilder.ApplyConfiguration(new ItemMapping());
             modelBuilder.ApplyConfiguration(new RoleMapping());
+            modelBuilder.ApplyConfiguration(new UserMapping());
         }
     }
 }
