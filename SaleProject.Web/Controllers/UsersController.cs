@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Mail;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using SaleProject.Data;
 using SaleProject.Entities.Users;
 using SaleProject.Web.Models.Users.User;
@@ -17,10 +22,12 @@ namespace SaleProject.Web.Controllers
     public class UsersController : ControllerBase
     {
         private readonly SystemDBContext _context;
+        private readonly IConfiguration _config;
 
-        public UsersController(SystemDBContext context)
+        public UsersController(SystemDBContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
 
         // GET: api/Users/List
@@ -155,27 +162,6 @@ namespace SaleProject.Web.Controllers
             }
         }
 
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser([FromRoute] int id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return Ok(user);
-        }
-
         // Change condition: api/Users/ChangeCondition/5
         [HttpPut("[action]/{id}")]
         public async Task<IActionResult> ChangeCondition([FromRoute] int id)
@@ -200,6 +186,63 @@ namespace SaleProject.Web.Controllers
             return Ok();
         }
 
+        // POST: api/Users/Login
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Login([FromBody] LoginViewModel model )
+        {
+            var email = model.email.ToLower();
+            if (!emailAlreadyExist(model.email)) return NotFound("Email not exists.");
+
+            var user = await _context.Users.
+                Where(u=>u.condition).
+                Include(u => u.role).
+                FirstOrDefaultAsync(u => u.email == model.email);
+
+            if (user == null) return NotFound("User does not exist. Please register first.");
+
+            if (!VerifyPassword(model.password, user.passwordhash, user.passwordsalt))
+            {
+                NotFound("Email or password does not match. Please try again.");
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.iduserperson.ToString()),
+                new Claim(ClaimTypes.Email, user.email.ToLower()),
+                new Claim(ClaimTypes.Role, user.role.rolname),
+                new Claim("idusuario", user.iduserperson.ToString()),
+                new Claim("rol", user.role.rolname),
+                new Claim("nombre", user.nameuser)
+            };
+
+            return Ok(
+                new { token = GenerateToken(claims) }
+                );
+        }
+
+        private bool VerifyPassword(string password, byte[] passHashStored, byte[] passwordSalt)
+        {
+            using(var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
+            {
+                var passHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                return new ReadOnlySpan<byte>(passHashStored).SequenceEqual(new ReadOnlySpan<byte>(passHash));
+            }
+        }
+
+        private string GenerateToken(List<Claim> claims)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                _config["Jwt:Issuer"],
+                _config["Jwt:Issuer"],
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: creds,
+                claims: claims);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
         private bool UserExists(int id)
         {
             return _context.Users.Any(e => e.iduserperson == id);
