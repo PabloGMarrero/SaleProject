@@ -13,10 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Maping\Sales\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SaleProject.Entities\SaleProject.Entities.csproj" />
   </ItemGroup>
 
