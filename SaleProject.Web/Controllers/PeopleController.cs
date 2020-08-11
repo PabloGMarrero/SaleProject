@@ -96,27 +96,6 @@ namespace SaleProject.Web.Controllers
             return _context.People.AnyAsync(p => p.email == email).Result;
         }
 
-
-
-        // GET: api/People/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetPerson([FromRoute] int id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var person = await _context.People.FindAsync(id);
-
-            if (person == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(person);
-        }
-
         // PUT: api/Users/Update/
         [HttpPut("[action]")]
         public async Task<IActionResult> Update([FromBody] UpdateViewModel model)
@@ -148,30 +127,9 @@ namespace SaleProject.Web.Controllers
             return Ok();
         }
 
-        // DELETE: api/People/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePerson([FromRoute] int id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var person = await _context.Persons.FindAsync(id);
-            if (person == null)
-            {
-                return NotFound();
-            }
-
-            _context.Persons.Remove(person);
-            await _context.SaveChangesAsync();
-
-            return Ok(person);
-        }
-
         private bool PersonExists(int id)
         {
-            return _context.Persons.Any(e => e.idperson == id);
+            return _context.People.Any(e => e.idperson == id);
         }
     }
 }
