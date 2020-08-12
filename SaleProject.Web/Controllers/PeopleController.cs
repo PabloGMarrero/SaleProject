@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ namespace SaleProject.Web.Controllers
             _context = context;
         }
 
+        [Authorize(Roles = "Admin, Seller")]
         // GET: api/People/ListClientes
         [HttpGet("[action]")]
         public async Task<IEnumerable<PersonViewModel>> ListClientes()
@@ -41,6 +43,7 @@ namespace SaleProject.Web.Controllers
         }
 
         // GET: api/People/ListProviders
+        [Authorize(Roles = "Admin, Grocerykeeper")]
         [HttpGet("[action]")]
         public async Task<IEnumerable<PersonViewModel>> ListProviders()
         {
@@ -59,6 +62,7 @@ namespace SaleProject.Web.Controllers
         }
 
         // POST: api/Users/Create
+        [Authorize(Roles = "Admin, Grocerykeeper, Seller")]
         [HttpPost("[action]")]
         public async Task<IActionResult> Create([FromBody] CreateViewModel model)
         {
@@ -97,6 +101,7 @@ namespace SaleProject.Web.Controllers
         }
 
         // PUT: api/Users/Update/
+        [Authorize(Roles = "Admin, Grocerykeeper, Seller")]
         [HttpPut("[action]")]
         public async Task<IActionResult> Update([FromBody] UpdateViewModel model)
         {
