@@ -62,7 +62,9 @@ namespace SaleProject.Web
                 app.UseHsts();
             }
 
+            app.UseCors("All");
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseMvc();
         }
     }
