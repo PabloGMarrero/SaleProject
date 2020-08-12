@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using SaleProject.Web.Models.Stores.Item;
 
 namespace SaleProject.Web.Controllers
 {
+    [Authorize(Roles = "Admin, Grocerykeeper")]
     [Route("api/[controller]")]
     [ApiController]
     public class ItemsController : ControllerBase
