@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SaleProject.Entities.Store;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SaleProject.Entities.Users
 {
@@ -22,5 +24,6 @@ namespace SaleProject.Entities.Users
         public byte[] passwordsalt { get; set; }
         public bool condition { get; set; }
         public Role role { get; set; }
+        public ICollection<Income> incomes { get; set; }
     }
 }
