@@ -1,5 +1,7 @@
 ﻿
 
+using SaleProject.Entities.Store;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SaleProject.Entities.Sales
@@ -17,5 +19,6 @@ namespace SaleProject.Entities.Sales
         public string addressperson { get; set; }
         public string phone { get; set; }
         public string email { get; set; }
+        public ICollection<Income> incomes {get; set;}
     }
 }
