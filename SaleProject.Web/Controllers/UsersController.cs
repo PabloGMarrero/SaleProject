@@ -6,6 +6,7 @@ using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,7 @@ namespace SaleProject.Web.Controllers
         }
 
         // GET: api/Users/List
+        [Authorize(Roles = "Admin")]
         [HttpGet("[action]")]
         public async Task<IEnumerable<UserViewModel>> List()
         {
@@ -53,6 +55,7 @@ namespace SaleProject.Web.Controllers
         }
 
         // PUT: api/Users/Update/
+        [Authorize(Roles = "Admin")]
         [HttpPut("[action]")]
         public async Task<IActionResult> Update([FromBody] UpdateViewModel model )
         {
@@ -111,6 +114,7 @@ namespace SaleProject.Web.Controllers
         }
 
         // POST: api/Users/Create
+        [Authorize(Roles = "Admin")]
         [HttpPost("[action]")]
         public async Task<IActionResult> Create([FromBody] CreateViewModel model)
         {
@@ -163,6 +167,7 @@ namespace SaleProject.Web.Controllers
         }
 
         // Change condition: api/Users/ChangeCondition/5
+        [Authorize(Roles = "Admin")]
         [HttpPut("[action]/{id}")]
         public async Task<IActionResult> ChangeCondition([FromRoute] int id)
         {
