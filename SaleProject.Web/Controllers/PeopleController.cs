@@ -61,6 +61,18 @@ namespace SaleProject.Web.Controllers
             });
         }
 
+        // GET: api/People/SelectProviders
+        [HttpGet("[action]")]
+        public async Task<IEnumerable<SelectViewModel>> SelectProviders()
+        {
+            var people = await _context.People.Where(p => p.typeperson =="Provider").ToListAsync();
+            return people.Select(p => new SelectViewModel
+            {
+                idperson = p.idperson,
+                namePerson = p.nameperson,
+            });
+        }
+
         // POST: api/Users/Create
         [Authorize(Roles = "Admin, Grocerykeeper, Seller")]
         [HttpPost("[action]")]
